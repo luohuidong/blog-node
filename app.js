@@ -1,10 +1,12 @@
+require('dotenv').config()
+
 const querystring = require('querystring')
 const handleBlogRouter = require('./src/router/blog')
 const handleUserRouter = require('./src/router/user')
 
 // 用于处理 post data
 const getPostData = req => {
-  const promise = new Promise((resolve, reject) => {
+  const promise = new Promise((resolve) => {
     if (req.method !== 'POST') {
       resolve({})
       return
@@ -45,18 +47,20 @@ const serverHandle = (req, res) => {
     req.body = postData
 
     // 处理 blog 路由
-    const blogData = handleBlogRouter(req, res)
-    if (blogData) {
-      res.end(JSON.stringify(blogData))
-      return
+    const blogResult = handleBlogRouter(req, res)
+    if (blogResult) {
+      return blogResult.then(blogData => {
+        res.end(JSON.stringify(blogData))
+      })
     }
 
     // 处理 user 路由
-    const userData = handleUserRouter(req, res)
-    if (userData) {
-      res.end(JSON.stringify(userData))
-      return
-    }  
+    const userResult = handleUserRouter(req, res)
+    if (userResult) {
+      return userResult.then(userData => {
+        res.end(JSON.stringify(userData))
+      })
+    }
 
     // 未命中路由，返回 404
     res.writeHead(404, { 'Content-type': 'text/plain' })
