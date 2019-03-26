@@ -5,8 +5,12 @@ const handleBlogRouter = require('./src/router/blog')
 const handleUserRouter = require('./src/router/user')
 const { redisGet, redisSet } = require('./src/db/redis')
 const { ErrorModel } = require('./src/model/resModel')
+const { writeLog } = require('./src/utils/log')
 
 const serverHandle = (req, res) => {
+  // 记录 access log
+  writeLog(`${req.method} -- ${req.url} -- ${req.headers['user-agent']} -- ${Date.now()}`)
+
   // 设置 JSON 返回格式
   res.setHeader('Content-type', 'application/json')
 
