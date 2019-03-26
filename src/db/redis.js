@@ -10,7 +10,7 @@ client.on('error', err => {
   console.log('err', err)
 })
 
-function set(key, val) {
+function redisSet(key, val) {
   if (typeof val === 'object') {
     // 如果 val 是一个对象，则将它转化为 JSON 进行存储
     val = JSON.stringify(val)
@@ -18,7 +18,7 @@ function set(key, val) {
   client.set(key, val, redis.print)
 }
 
-function get(key) {
+function redisGet(key) {
   return new Promise((resolve, reject) => {
     client.get(key, (err, val) => {
       if (err) {
@@ -41,6 +41,6 @@ function get(key) {
 }
 
 module.exports = {
-  set,
-  get
+  redisSet,
+  redisGet
 }
