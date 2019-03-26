@@ -1,5 +1,18 @@
 原生 Node 开发的简易博客 server，适合用于理解原理。在真正的项目中，很少会使用原生 Node 去开发业务，一般会使用 Express，Koa，Hapi 之类的框架。
 
+## 目录结构
+
+```
+.
+├── bin // service 定义
+└── src
+    ├── conf // MySQL、redis 配置
+    ├── controller // 数据库操作
+    ├── db // 连接数据库、redis。操作数据库、redis
+    ├── model // 规范返回前端的数据格式
+    └── router // 路由处理
+```
+
 ## 项目 Node 依赖
 
 - [cross-env](https://github.com/kentcdodds/cross-env)：使在命令中定义的环境变量能跨 Windows, Linux, Mac 平台使用。
