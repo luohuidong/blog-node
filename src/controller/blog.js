@@ -1,3 +1,4 @@
+const xss = require('xss')
 const { exec, escape } = require('../db/mysql')
 /**
  * 获取博客文章列表 
@@ -43,8 +44,13 @@ const getDetail = id => {
  */
 const newBlog = (blogData ={}) => {
   let { title, content, author } = blogData
+  
+  title = xss(title)
   title = escape(title)
+
+  content = xss(content)
   content = escape(content)
+
   author = escape(author)
 
   const createTime = Date.now()
