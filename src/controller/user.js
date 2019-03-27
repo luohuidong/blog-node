@@ -1,6 +1,9 @@
-const { exec } = require('../db/mysql')
+const { exec, escape } = require('../db/mysql')
 
 const login = (username, password) => {
+  username = escape(username)
+  username = escape(password)
+
   const sql = `
     SELECT 
       username, realname FROM users 
