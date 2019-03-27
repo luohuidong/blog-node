@@ -1,4 +1,6 @@
-原生 Node 开发的简易博客 server，适合用于理解原理。在真正的项目中，很少会使用原生 Node 去开发业务，一般会使用 Express，Koa，Hapi 之类的框架。
+原生 Node 开发的简易博客 server，适合用于理解原理。使用原生 Node 去开发 server 很复杂，而且没有标准可以，因此代码很容易就写得很乱。因此使用原生 Node 去开发，比较适合去理解原理，但并不适合真正的应用。
+
+在真正的项目中，很少会使用原生 Node 去开发业务，一般会使用 Express，Koa，Hapi 之类的框架，当使用框架之后，就会发现代码是非常有条例，非常清晰的。
 
 ## 目录结构
 
@@ -20,11 +22,21 @@
 - [mysql](https://github.com/mysqljs/mysql)：用于操作 MySQL 数据库。
 - [node_redis](https://github.com/NodeRedis/node_redis)：用于操作 Redis。
 
-## .env 文件
+## 功能模块
+
+- 处理 http 接口：处理路由
+- 连接数据库
+- 实现登录: cookie、session、redis
+- 安全措施：预防 XSS 攻击、密码加密、处理 SQL 注入
+- 通过 stream 写日志，通过 readline 分析日志，contrab 定时任务
+
+## 相关知识
+
+### .env 文件
 
 一般来说 .env 文件一般是用来存放一些比较敏感的信息，如果是公开的仓库，请在 .gitignore 中将 .env 文件过滤掉，防止 .env 上传到公开的仓库。
 
-## Cookie
+### Cookie
 
 HTTP 是无状态的，也就是说服务器并不知道前后两次请求是不是同一个人。而使用了 Cookie 之后，服务器就能知道前后两次请求是不是同一个人了。
 
@@ -37,7 +49,7 @@ Cookie 有下面一些特点：
 - server 可以修改 Cookie 并返回给浏览器。
 - 浏览器中也可以通过 JavaScript 修改 Cookie。 
 
-### 前端查看和修改 Cookie 
+#### 前端查看和修改 Cookie 
 
 通过 `document.cookie` 可以查看 Cookie，如果给 `document.cookie` 赋值，还可以更改 Cookie。
 
@@ -55,7 +67,7 @@ console.log(document.cookie) // 'key1=value1; key2=value2; key3=value3'
 
 因此每次通过 `document.cookie` 修改 Cookie，其实就是一个累加的过程。
 
-### Node 查看 Cookie
+#### Node 查看 Cookie
 
 ```js
 ...
@@ -67,7 +79,7 @@ const server = http.createServer((req, res) => {
 ...
 ```
 
-### Node 解析 Cookie
+#### Node 解析 Cookie
 
 解析其实就是将 Cookie 字符串中的内容转换为对象来存储
 
@@ -91,7 +103,7 @@ function parseCookie(req) {
 }
 ```
 
-### 限制前端修改 Cookie 的影响
+#### 限制前端修改 Cookie 的影响
 
 Node 设置 Cookie：
 
@@ -101,7 +113,7 @@ res.setHeader('Set-Cookie', 'userId=123; path=/; httpOnly;')
 
 设置完之后，前端通过 `document.cookie` 是获取不到 userId 这个记录的。可以理解为 userId 这条记录对前端隐藏了，使得前端既获取不到它的值，也不能给 userId 赋值。
 
-## Session
+### Session
 
 在 Cookie 中存放用户的信息是比较危险了，例如在 Cookie 中存放用户的 username，用户的 username 很有可能是他的邮箱或者是手机，总不可能将这些敏感的信息放在 Cookie 中吧。另外 Cookie 存储信息也有大小的限制。
 
@@ -109,7 +121,7 @@ res.setHeader('Set-Cookie', 'userId=123; path=/; httpOnly;')
 
 也就是说，不通过 Cookie 来存储用户信息了，改为通过 server 端来存储用户的信息。在 server 端存储信息，一方面是存储的信息大小没有限制，即便是服务器空间不够也可以扩展。另一方面就是也避免了通过 Cookie 暴露用户敏感信息的危险。
 
-### redis
+#### redis
 
 一般 Session 是不会通过变量来存储了，因为通过变量来存储的话，是放在 Node 进程的内存中。但是操作系统分配给 Node 进程的内存是有限的，如果访问量过大的话，内存暴增，超过系统分配给 Node 进程的内存上线，进程是话挂掉的。另外一般正式上线之后，运行是多进程的，进程之间内存无法共享。
 
@@ -147,7 +159,7 @@ keys *
 del [key]
 ```
 
-## 日志
+### 日志
 
 server 端最为重要的就是访问日志 (access log)了。另外还有自定义日志，包括自定义事件和错误记录。
 
@@ -235,7 +247,7 @@ readStream.on('end', function() {
 
 上面的例子中，实现了将 data.txt 中的内容复制到 data2.txt 中。不像使用 `readFile` 和 `writeFile` 直接就将整个文件读取，使用流来读写文件是非常节省内存资源的，它是读取一部分文件就写一部分文件，因此使用流来读写比较大的文件的时候，并不会消耗很多的内存。
 
-### 日志拆分
+#### 日志拆分
 
 - 日志内容会慢慢积累，放在一个文件中不好处理
 - 按时间划分日志文件，如 2019-02-10.access.log
@@ -246,6 +258,6 @@ readStream.on('end', function() {
 - 将 access.log 拷贝并重命名为 20xx-01-20.access.log
 - 清空 access.log 文件，继续积累日志
 
-### 日志分析
+#### 日志分析
 
 由于日志是按行存储的，一行就是一条日志，因此可以使用 Node 中的 readline api，一行一行地读取文件。由于 readline api 是基于 stream 的，因此读取文件的效率非常高。
