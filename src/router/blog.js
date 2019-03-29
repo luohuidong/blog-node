@@ -19,10 +19,10 @@ const handleBlogRouter = (req, res) => {
 
   // 获取博客列表
   if (method === 'GET' && path === '/api/blog/list') {
-    const authod = req.query.author || ''
+    const author = req.query.author || ''
     const keyword = req.query.keyword || ''
 
-    return getList(authod, keyword).then(result => {
+    return getList(author, keyword).then(result => {
       return new SuccessModel(result)
     })
   }
