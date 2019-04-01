@@ -2,6 +2,11 @@
 
 在真正的项目中，很少会使用原生 Node 去开发业务，一般会使用 Express，Koa，Hapi 之类的框架，当使用框架之后，就会发现代码是非常有条例，非常清晰的。
 
+下面两个 repo 是我分别使用 express 及 koa 去实现这个项目相同的功能，可以看出使用了 express 及 koa 代码的结构比 Node 原生去开发 server 要清晰、规范很多。
+
+- [blog-express](https://github.com/luohuidong/blog-express)
+- [blog-koa2](https://github.com/luohuidong/blog-koa2)
+
 ## 目录结构
 
 ```
